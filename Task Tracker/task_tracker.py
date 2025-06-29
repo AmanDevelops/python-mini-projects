@@ -1,29 +1,29 @@
-import time
-import json
 import argparse
 import pickle
+import time
+
 
 class TaskTracker:
     """
     Handles Tasks
     """
+
+    fileName = "Tasks.db"
+
     def write_file(taskFunc) -> None:
-        def wrapper(self,  *args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             result = taskFunc(self, *args, *kwargs)
             try:
-                with open(self.fileName, 'w') as f:
-                    json.dump(self.tasks,f, default=str, indent=4)
-                with open(filename, "wb") as file:
+                with open(TaskTracker.fileName, "wb") as file:
                     pickle.dump(self, file)
             except:
                 raise IOError("Could not write data to file")
             return result
+
         return wrapper
-    
-    @write_file
+
     def __init__(self) -> None:
         self.tasks = []
-        self.fileName = "Tasks.json"
 
     @write_file
     def add_task(self, task: str) -> int:
@@ -35,20 +35,23 @@ class TaskTracker:
             "description": task,
             "status": "todo",
             "createdAt": currentTime,
-            "updatedAt": currentTime
-
+            "updatedAt": currentTime,
         }
         self.tasks.append(task)
 
     @write_file
     def update_task(self, id: int, task: str) -> None:
+        if id > len(self.tasks):
+            raise IndexError(f"Task with ID {id} does not exist")
         if task == "":
             raise ValueError("Please provide an input")
         self.tasks[id - 1]["description"] = task
         self.tasks[id - 1]["updatedAt"] = int(time.time())
-    
+
     @write_file
     def delete_task(self, id: int) -> None:
+        if id > len(self.tasks):
+            raise IndexError(f"Task with ID {id} does not exist")
         self.tasks.pop(id - 1)
 
     @write_file
@@ -59,7 +62,6 @@ class TaskTracker:
             raise TypeError("Invalid Operation")
         self.tasks[id - 1]["status"] = newStatus
         self.tasks[id - 1]["updatedAt"] = int(time.time())
-
 
     def list_tasks(self, filter: str = None) -> list:
         if filter is None:
@@ -75,53 +77,76 @@ class TaskTracker:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Simple Tasks CLI")
 
-    sub_parser = parser.add_subparsers(dest='command')
+    sub_parser = parser.add_subparsers(dest="command")
 
-    add_parser = sub_parser.add_parser('add',help='add tasks to the to do list')
-    add_parser.add_argument('task', type=str, nargs=1, help='To-Do Task')
+    add_parser = sub_parser.add_parser("add", help="add tasks to the to do list")
+    add_parser.add_argument("task", type=str, help="To-Do Task")
 
-    update_parser = sub_parser.add_parser('update', help='update existing task')
-    update_parser.add_argument('number', type=int, help='index to to-do')
-    update_parser.add_argument('content', type=str, help='updated content')
+    update_parser = sub_parser.add_parser("update", help="update existing task")
+    update_parser.add_argument("number", type=int, help="index to to-do")
+    update_parser.add_argument("content", type=str, help="updated content")
 
-    delete_parser = sub_parser.add_parser('delete', help='delete existing task')
-    delete_parser.add_argument('number', type=int, help='index to delete')
+    delete_parser = sub_parser.add_parser("delete", help="delete existing task")
+    delete_parser.add_argument("number", type=int, help="index to delete")
 
-    mark_pending_parser = sub_parser.add_parser('mark-in-progress', help='mark-in-progress existing task')
-    mark_pending_parser.add_argument('number', type=int, help='index to mark-in-progress')
+    mark_pending_parser = sub_parser.add_parser(
+        "mark-in-progress", help="mark-in-progress existing task"
+    )
+    mark_pending_parser.add_argument(
+        "number", type=int, help="index to mark-in-progress"
+    )
 
-    mark_done_parser = sub_parser.add_parser('mark-done', help='mark-done existing task')
-    mark_done_parser.add_argument('number', type=int, help='index to mark-done')
+    mark_done_parser = sub_parser.add_parser(
+        "mark-done", help="mark-done existing task"
+    )
+    mark_done_parser.add_argument("number", type=int, help="index to mark-done")
 
-    list_parser = sub_parser.add_parser('list', help='list all the tasks')
-    list_parser.add_argument('--filter', type=str, help='filter tasks by status', default=None, nargs=1)
-
+    list_parser = sub_parser.add_parser("list", help="list all the tasks")
+    list_parser.add_argument(
+        "filter",
+        type=str,
+        nargs="?",
+        help="filter tasks by status (todo, in-progress, done)",
+    )
 
     args = parser.parse_args()
 
     try:
-        filename = ".instance.db"
-        with open(filename, "rb") as file:
+        with open(TaskTracker.fileName, "rb") as file:
             tracker = pickle.load(file)
     except:
         tracker = TaskTracker()
 
+    try:
+        if args.command == "add":
+            tracker.add_task(args.task)
+            print(f"Task added successfully (ID: {len(tracker.tasks)})")
+        elif args.command == "update":
+            tracker.update_task(args.number, args.content)
+            print(f"Task {args.number} updated successfully")
 
-    if args.command == 'add':
-        tracker.add_task(args.task[0])
-    if args.command == 'update':
-        tracker.update_task(args.number, args.content)
-    if args.command == 'delete':
-        tracker.delete_task(args.number)
-    if args.command == 'mark-in-progress':
-        tracker.update_status(args.number, "in-progress")
-    if args.command == 'mark-done':
-        tracker.update_status(args.number, "done")
+        elif args.command == "delete":
+            tracker.delete_task(args.number)
+            print(f"Task {args.number} deleted successfully")
 
-    if args.command == 'list':
-        filter = args.filter[0] if args.filter is not None else None
-        tasks = tracker.list_tasks(filter)
-        num = 1
-        for i in tasks:
-            print(f"[{num}] {i['description']} - {i['status']}")
-            num+=1
+        elif args.command == "mark-in-progress":
+            tracker.update_status(args.number, "in-progress")
+            print(f"Task {args.number} marked as in-progress")
+
+        elif args.command == "mark-done":
+            tracker.update_status(args.number, "done")
+            print(f"Task {args.number} marked as done")
+
+        elif args.command == "list":
+            tasks = tracker.list_tasks(args.filter)
+            if not tasks:
+                print(
+                    f"No tasks found{' with status: ' + args.filter if args.filter else ''}"
+                )
+            else:
+                print(f"Tasks{' with status: ' + args.filter if args.filter else ''}:")
+                for task in tasks:
+                    print(f"[{task['id']}] {task['description']} - {task['status']}")
+
+    except Exception as e:
+        print(f"[Error] {e}")
