@@ -3,7 +3,7 @@ name: Release Task Tracker
 on:
   push:
     tags:
-      - TaskTracker
+      - TaskTracker*
 
 jobs:
   build-and-release:
@@ -28,10 +28,9 @@ jobs:
           pyinstaller --onefile --noconsole "Task Tracker/task_tracker.py"
 
       - name: Upload Release
-        uses: softprops/action-gh-release@v2
+        uses: ncipollo/release-action@v1
         with:
           name: Task Tracker Release
-          tag_name: TaskTracker
-          files: dist/task_tracker.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: TaskTracker
+          artifacts: dist/task_tracker.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
