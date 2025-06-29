@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Executable
         run: |
-          pyinstaller --onefile --noconsole task_tracker.py
+          pyinstaller --onefile --noconsole "Task Tracker/task_tracker.py"
 
       - name: Upload Release
         uses: softprops/action-gh-release@v2
