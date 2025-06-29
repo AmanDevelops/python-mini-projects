@@ -33,4 +33,4 @@ jobs:
           name: Task Tracker Release
           tag: TaskTracker
           artifacts: dist/task_tracker.exe
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
