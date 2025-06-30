@@ -71,7 +71,6 @@ class Summarizer:
         """
         Docs: https://docs.github.com/en/rest/using-the-rest-api/github-event-types#pullrequestevent
         """
-        print(self.summary)
 
         action = event["payload"]["action"]
         repo_name = event["repo"]["name"]
@@ -94,48 +93,49 @@ class Summarizer:
             print(
                 f"[Error {error_message.get('status')}]: {error_message.get('message')}"
             )
-        else:
-            events = eventsResponse.json()
-            print(f"Here is the recent activities of {username}: \n")
+            return
 
-            for event in events:
-                event_type = event.get("type")
-                if event_type not in self.CURRENT_SUPPORTED_EVENTS:
-                    continue
+        events = eventsResponse.json()
 
-                handler = getattr(self, event_type, None)
-                if handler:
-                    handler(event=event)
+        # Processing the result from APi
+        for event in events:
+            event_type = event.get("type")
+            if event_type not in self.CURRENT_SUPPORTED_EVENTS:
+                continue
 
-            for event_type, event_summary_data in self.summary.items():
-                if event_type == "pushEvent":
-                    if event_summary_data == {}:
-                        continue
-                    print("Commits: ")
-                    for reponame, number_of_commits in event_summary_data.items():
-                        print(f"    - Pushed {number_of_commits} commits to {reponame}")
+            handler = getattr(self, event_type, None)
+            if handler:
+                handler(event=event)
 
-                elif event_type == "issuesEvent":
-                    if event_summary_data == {}:
-                        continue
-                    print("Issues: ")
-                    for action_type, repos in event_summary_data.items():
-                        for repo_name, count in repos.items():
-                            print(f"    - {action_type} {count} issue in {repo_name}")
+        # Printing the summarized result
+        print(f"Here is the recent activities of {username}: \n")
 
-                elif event_type == "watchEvent":
-                    if not len(event_summary_data):
-                        continue
-                    print("Stars: ")
-                    for i in event_summary_data:
-                        print(f"    - Starred {i}")
+        for event_type, event_summary_data in self.summary.items():
+            if not event_summary_data:
+                continue
 
-                elif event_type == "PullRequestEvent":
-                    if event_summary_data == {}:
-                        continue
-                    print("Pull Request: ")
-                    for action_type, repos in event_summary_data.items():
-                        for repo_name, count in repos.items():
-                            print(
-                                f"    - {action_type} {count} pull request in {repo_name}"
-                            )
+            if event_type == "pushEvent":
+                print("Commits: ")
+                for repo_name, number_of_commits in event_summary_data.items():
+                    print(
+                        f"    - Pushed {number_of_commits} commits to {repo_name}"
+                    )
+
+            elif event_type == "issuesEvent":
+                print("Issues: ")
+                for action_type, repos in event_summary_data.items():
+                    for repo_name, count in repos.items():
+                        print(f"    - {action_type} {count} issue in {repo_name}")
+
+            elif event_type == "watchEvent":
+                print("Stars: ")
+                for i in event_summary_data:
+                    print(f"    - Starred {i}")
+
+            elif event_type == "PullRequestEvent":
+                print("Pull Request: ")
+                for action_type, repos in event_summary_data.items():
+                    for repo_name, count in repos.items():
+                        print(
+                            f"    - {action_type} {count} pull request in {repo_name}"
+                        )
