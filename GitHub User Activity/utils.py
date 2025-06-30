@@ -97,7 +97,7 @@ class Summarizer:
 
         events = eventsResponse.json()
 
-        # Processing the result from APi
+        # Processing the result from API
         for event in events:
             event_type = event.get("type")
             if event_type not in self.CURRENT_SUPPORTED_EVENTS:
