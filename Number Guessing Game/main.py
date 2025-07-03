@@ -1,3 +1,4 @@
+import pickle
 import random
 import sys
 import time
@@ -5,6 +6,30 @@ import time
 from hints import hints
 
 choices = {1: ("Easy", 10), 2: ("Medium", 5), 3: ("Hard", 3)}
+
+
+class HighScores:
+    def __init__(self):
+        try:
+            with open("highScores.pkl", "rb") as f:
+                readHighScoresInstance = pickle.load(f)
+            self.highscoresData = readHighScoresInstance.highscoresData
+            print(self.highscoresData)
+        except:
+            self.highscoresData = []
+
+    def addScore(self, name: str, timer: int, attempts: int, category: int):
+        self.highscoresData.append(
+            {
+                "name": name,
+                "category": choices[category][0],
+                "timeTaken": timer,
+                "attempts": attempts,
+            }
+        )
+
+        with open("highScores.pkl", "wb") as f:
+            pickle.dump(self, f)
 
 
 def welcome_statements():
@@ -30,11 +55,9 @@ def input_difficulty():
 
 playAgain = "y"
 
-# keyboard.add_hotkey('ctrl+h', my_function)
-
-
 if __name__ == "__main__":
     while playAgain == "y":
+        scores = HighScores()
         welcome_statements()
 
         difficulty_level = input_difficulty()
@@ -50,7 +73,6 @@ if __name__ == "__main__":
 
         print(f"You have {chances_left} chances left, for hint type 'hint'")
 
-
         startTime = time.time()
 
         while chances_left != 0:
@@ -62,7 +84,11 @@ if __name__ == "__main__":
                 number_guessed = int(number_guessed)
                 if number_guessed > 100 or number_guessed < 1:
                     raise ValueError
-                print(f"You have {chances_left} chances left")
+
+                chances_left -= 1
+                print(
+                    f"You have {chances_left} chances left" if chances_left != 0 else ""
+                )
             except ValueError:
                 print("Plese enter a valid number")
                 continue
@@ -71,13 +97,26 @@ if __name__ == "__main__":
                 print(
                     f"Congratulations! You guessed the correct number in {int(endTime - startTime)} seconds and you still have {chances_left} chances left."
                 )
-                sys.exit()
 
-            chances_left -= 1
+                scores.addScore(
+                    name=input("What is Your Leaderboard Name"),
+                    timer=int(endTime - startTime),
+                    attempts=chances_left,
+                    category=difficulty_level,
+                )
+                break
+
             if number_guessed > number_to_guess:
                 print(f"Incorrect! The number is less than {number_guessed}.")
             else:
                 print(f"Incorrect! The number is greater than {number_guessed}.")
-        print("You lost the game.")
+        if chances_left == 0:
+            print("You lost the game.")
+
+        if input("Do you want to see the leaderboard: ") == "y":
+            for i in scores.highscoresData:
+                print(
+                    f'{i["name"]} taken  {i["timeTaken"]} seconds  with {i["attempts"]} left in {i["category"]} category'
+                )
 
         playAgain = input("Do you want to play again? (y/N): ")
