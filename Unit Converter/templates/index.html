@@ -12,7 +12,7 @@
   <body>
     <h1>Unit Convertor</h1>
     <main>
-      <div class="navbar">
+      <nav>
         <div
           class="{% if request.args.get('app') == 'length'%}active{% endif %}"
         >
@@ -28,12 +28,28 @@
         >
           <a href="?app=temperature">Temperature</a>
         </div>
+      </nav>
+      <div class="calculator">
+        <form method="post">
+          <div class="labels">
+            <label for="input">Input: </label>
+            <input type="number" name="fromValue" />
+            <select name="fromUnit">
+              <option value="mtr">Meters</option>
+            </select>
+          </div>
+          <div class="labels">
+            Convert To
+            <select name="toUnit">
+              <option value="mtr">Meters</option>
+            </select>
+          </div>
+          <div class="labels">
+            <input type="submit" value="Calculate" />
+          </div>
+          <div class="labels">Output: <span class="output"></span></div>
+        </form>
       </div>
-      {% if request.args.get('app') == 'length'%}
-      <div class="length">
-        <h2>Enter the length to convert</h2>
-      </div>
-      {% endif %}
     </main>
   </body>
 </html>

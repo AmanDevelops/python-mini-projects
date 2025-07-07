@@ -1,4 +1,3 @@
-/* latin */
 @font-face {
   font-family: "Nunito";
   font-style: normal;
@@ -11,36 +10,86 @@
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: "Nunito";
-  text-align: center;
 }
 
 h1 {
+  text-align: center;
   font-size: 5rem;
+  padding: 2rem;
 }
 
-.navbar {
-  margin: auto;
+main {
   display: flex;
-  width: 60vw;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+}
+
+nav {
+  display: flex;
   justify-content: space-around;
+  width: 40vw;
   gap: 1rem;
-  cursor: pointer;
 }
 
-.navbar div {
-    width: 80%;
-    transition: all 50ms ease-in-out;
-    font-size: 2rem;
+nav div {
+  flex: 1;
+  transition: all 50ms ease-in-out;
+  font-size: 2rem;
+  text-align: center;
 }
 
-.navbar div:hover,
+nav div:hover,
 .active {
   border-bottom: 3px solid black;
 }
 
-a:any-link{
-    text-decoration: none;
-    color: black;
+a:any-link {
+  text-decoration: none;
+  color: black;
+}
+
+.calculator {
+  margin-top: 1.5rem;
+  width: 60vw;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+label,
+input,
+select, .labels {
+  font-size: 2rem;
+}
+
+.output{
+    color: green;
+    font-weight: 600;
+}
+
+input[type="submit"]{
+    padding: 0.5rem;
+    cursor: pointer;
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: all 200ms ease-in-out;
+}
+
+input[type="submit"]:hover{
+    scale: 1.05;
 }
