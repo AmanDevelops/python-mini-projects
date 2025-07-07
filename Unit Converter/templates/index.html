@@ -33,21 +33,29 @@
         <form method="post">
           <div class="labels">
             <label for="input">Input: </label>
-            <input type="number" name="fromValue" />
+            <input type="text" name="fromValue" required/>
             <select name="fromUnit">
-              <option value="mtr">Meters</option>
+              {% for key, values in units.items() %}
+              <option value="{{key}}">{{key}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="labels">
             Convert To
             <select name="toUnit">
-              <option value="mtr">Meters</option>
+              {% for key, values in units.items() %}
+              <option value="{{key}}">{{key}}</option>
+              {% endfor %}
             </select>
           </div>
           <div class="labels">
             <input type="submit" value="Calculate" />
           </div>
-          <div class="labels">Output: <span class="output"></span></div>
+          <div class="labels">
+            {% if result %}
+            Output: <span class="output">{{result}} {{request.form.get('toUnit') or ""}}</span>
+            {% endif %}
+          </div>
         </form>
       </div>
     </main>
