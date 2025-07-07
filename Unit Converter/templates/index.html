@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Convertor</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Unit Convertor</h1>
+    <main>
+      <div class="navbar">
+        <div
+          class="{% if request.args.get('app') == 'length'%}active{% endif %}"
+        >
+          <a href="?app=length"> Length</a>
+        </div>
+        <div
+          class="{% if request.args.get('app') == 'weight'%}active{% endif %}"
+        >
+          <a href="?app=weight">Weight</a>
+        </div>
+        <div
+          class="{% if request.args.get('app') == 'temperature'%}active{% endif %}"
+        >
+          <a href="?app=temperature">Temperature</a>
+        </div>
+      </div>
+      {% if request.args.get('app') == 'length'%}
+      <div class="length">
+        <h2>Enter the length to convert</h2>
+      </div>
+      {% endif %}
+    </main>
+  </body>
+</html>
