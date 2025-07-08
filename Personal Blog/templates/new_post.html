@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create new post</title>
+
+    <style>
+      body {
+        font-family: "Times New Roman", Times, serif;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 60%;
+      }
+      input {
+        font-size: 2rem;
+      }
+
+      input[type="submit"] {
+        width: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>New Article</h1>
+    <form method="post">
+      <input type="text" name="title" placeholder="Article title" />
+      <div>
+        <label for="pub_date">Publishing date</label>
+        <input type="datetime-local" name="pub_date" id="pub_date" />
+      </div>
+      <textarea
+        type="textarea"
+        rows="15"
+        placeholder="Enter Content"
+        name="content"
+      ></textarea>
+
+      <input type="submit" />
+    </form>
+  </body>
+</html>

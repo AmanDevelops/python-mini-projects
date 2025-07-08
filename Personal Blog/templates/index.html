@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Blog</title>
+  </head>
+  <body>
+    <h1>Personal blog</h1>
+
+    {% for post in posts%}
+    <a href="/article/{{post.id}}">{{post.title}}</a>
+    <p>{{post.date}}</p>
+    {% endfor %}
+  </body>
+</html>

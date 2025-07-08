@@ -209,5 +209,5 @@ __marimo__/
 
 # Custom .gitignore
 
-Tasks.db
-highScores.pkl
+*.db
+*.pkl

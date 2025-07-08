@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel</title>
+  </head>
+  <body>
+    <h1>Personal Blog</h1>
+    <a href="/logout">logout</a>
+    <a href="/admin/new">+Add</a>
+
+    {% for post in posts%}
+    <a href="/article/{{post.id}}">{{post.title}}</a>
+    <a href="/admin/edit/{{post.id}}">Edit</a>
+    <a href="/admin/delete/{{post.id}}">Delete</a>
+    {% endfor %}
+  </body>
+</html>
