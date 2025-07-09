@@ -98,6 +98,11 @@ From the admin dashboard, you can:
 - Delete a post.
 
 ## Screenshots
+![Screenshot from 2025-07-09 12-09-10](https://github.com/user-attachments/assets/7d326e03-06a5-4860-a699-9523479bac47)
+![image](https://github.com/user-attachments/assets/0360808c-d3fb-47a9-bbef-b726f9cdce25)
+![image](https://github.com/user-attachments/assets/71dc1bfa-2403-47ee-9a4a-1c0f66595f95)
+![image](https://github.com/user-attachments/assets/5ad6061e-b24b-498a-9926-03fc8dfd948d)
+![image](https://github.com/user-attachments/assets/6641c816-258f-4911-8ebc-e511e013ec49)
 
 
 
