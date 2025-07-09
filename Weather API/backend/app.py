@@ -11,6 +11,7 @@ app = Flask(__name__)
 r = Redis(
     host=os.environ.get("REDIS_HOST"),
     port=os.environ.get("REDIS_PORT"),
+    password=os.environ.get("REDIS_PASSWORD"),
     decode_responses=True,
 )
 
@@ -18,7 +19,7 @@ r = Redis(
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    storage_uri=f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}",
+    storage_uri=f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}",
     default_limits=["1000 per day", "100 per hour"],
 )
 
