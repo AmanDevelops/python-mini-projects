@@ -5,4 +5,4 @@
 - [Number Guessing Game](/Number%20Guessing%20Game/) - <sup>[Inspiration](https://roadmap.sh/projects/number-guessing-game)</sup>
 - [Unit Converter](/Unit%20Converter/) - <sup>[Inspiration](https://roadmap.sh/projects/unit-converter)</sup>
 - [Personal Blog](/Personal%20Blog/) - <sup>[Inspiration](https://roadmap.sh/projects/personal-blog)</sup>
-
+- [Weather API](/Weather%20API/) - <sup>[Inspiration](https://roadmap.sh/projects/weather-api-wrapper-service)</sup>
