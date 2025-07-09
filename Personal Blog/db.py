@@ -38,7 +38,10 @@ class Database:
 
     @write_file
     def update_post(self, id: int, title: str, date: str, content: str):
-        self.posts[id - 1] = {
+        post_index = self.posts.index(
+            next((post for post in self.posts if post.get("id") == id), None)
+        )
+        self.posts[post_index] = {
             "id": id,
             "title": title,
             "date": date,
@@ -48,7 +51,12 @@ class Database:
 
     @write_file
     def delete_post(self, id: int):
-        self.posts.pop(id - 1)
+
+        self.posts.pop(
+            self.posts.index(
+                next((post for post in self.posts if post.get("id") == id), None)
+            )
+        )
 
     def get_post(self, id: int) -> dict:
         return next((post for post in self.posts if post.get("id") == id), None)
