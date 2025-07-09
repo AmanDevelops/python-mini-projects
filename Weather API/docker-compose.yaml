@@ -1,0 +1,21 @@
+services:
+  web:
+    build: backend/
+    container_name: flask-weather-api
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
