@@ -27,7 +27,7 @@ A simple weather API that provides weather information for a given city. It uses
 
 ```bash
 git clone https://github.com/AmanDevelops/python-mini-projects.git
-cd python-mini-projects/Weather\ API
+cd '.\python-mini-projects\Weather API\'
 ```
 
 ### 2. Set up environment variables
