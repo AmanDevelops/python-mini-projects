@@ -1,11 +1,26 @@
-import json, os
+import json
+import os
 
 import requests
 from flask import Flask, redirect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from redis import Redis, exceptions
 
 app = Flask(__name__)
-r = Redis(host=os.environ.get('REDIS_HOST'), port=os.environ.get('REDIS_PORT'), decode_responses=True)
+r = Redis(
+    host=os.environ.get("REDIS_HOST"),
+    port=os.environ.get("REDIS_PORT"),
+    decode_responses=True,
+)
+
+# Initialize rate limiter with Redis as storage
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    storage_uri=f"redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}",
+    default_limits=["1000 per day", "100 per hour"],
+)
 
 # Stops the server from booting up if there is a connection error
 try:
@@ -16,7 +31,7 @@ except exceptions.ConnectionError as e:
     exit(1)
 
 
-API_KEY = os.environ.get('WEATHER_API_KEY')
+API_KEY = os.environ.get("WEATHER_API_KEY")
 BASE_URL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
 
 
@@ -26,6 +41,7 @@ def home():
 
 
 @app.route("/weather/<string:city_name>")
+@limiter.limit("1 per second")
 def weather(city_name: str):
     # Get the Data from redis
     cache_weather_data = r.get(city_name)
@@ -65,6 +81,3 @@ def weather(city_name: str):
     except requests.exceptions.JSONDecodeError:
         # API error
         return "Internal Server Error", 500
-    
-
-
