@@ -4,16 +4,53 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel</title>
+    <style>
+      body {
+        width: 60vw;
+        margin: auto;
+      }
+      h1 {
+        text-align: center;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        height: 4rem;
+        font-size: 3rem;
+      }
+      a:any-link {
+        text-decoration: none;
+        color: rgb(30, 148, 216);
+      }
+      .post_item {
+        border: 1px solid black;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 2rem;
+      }
+
+      @media screen and (max-width: 800px) {
+        body {
+          width: 95vw;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>Personal Blog</h1>
-    <a href="/logout">logout</a>
-    <a href="/admin/new">+Add</a>
-
+    <nav>
+      <a href="/admin/new">+new post</a>
+      <a href="/logout">logout</a>
+    </nav>
     {% for post in posts%}
-    <a href="/article/{{post.id}}">{{post.title}}</a>
-    <a href="/admin/edit/{{post.id}}">Edit</a>
-    <a href="/admin/delete/{{post.id}}">Delete</a>
+    <div class="post_item">
+      <a href="/article/{{post.id}}" style="color: black">{{post.title}}</a>
+      <div class="post_title">
+        <a href="/admin/edit/{{post.id}}">Edit</a>
+        <a href="/admin/delete/{{post.id}}" style="color: red">Delete</a>
+      </div>
+    </div>
     {% endfor %}
   </body>
 </html>

@@ -4,13 +4,45 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personal Blog</title>
+        <style>
+      body {
+        width: 60vw;
+        margin: auto;
+      }
+      h1 {
+        text-align: center;
+      }
+      a:any-link {
+        text-decoration: none;
+        color: rgb(30, 148, 216);
+      }
+      .post_item {
+        border: 1px solid black;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        font-size: 2rem;
+      }
+      .post_item p{
+        font-size: 1rem;
+        color: gray;
+      }
+
+      @media screen and (max-width: 800px) {
+        body {
+          width: 95vw;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>Personal blog</h1>
 
     {% for post in posts%}
+    <div class="post_item">
     <a href="/article/{{post.id}}">{{post.title}}</a>
     <p>{{post.date}}</p>
+    </div>
     {% endfor %}
   </body>
 </html>
