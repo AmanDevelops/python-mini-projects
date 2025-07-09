@@ -27,16 +27,17 @@
   <body>
     <h1>New Article</h1>
     <form method="post">
-      <input type="text" name="title" placeholder="Article title" />
+      <input type="text" name="title" placeholder="Article title" required />
       <div>
         <label for="pub_date">Publishing date</label>
-        <input type="datetime-local" name="pub_date" id="pub_date" />
+        <input type="datetime-local" name="pub_date" id="pub_date" required />
       </div>
       <textarea
         type="textarea"
         rows="15"
         placeholder="Enter Content"
         name="content"
+        required
       ></textarea>
 
       <input type="submit" />

@@ -17,20 +17,24 @@ class Database:
     def __init__(self):
         try:
             with open("posts.pkl", "rb") as f:
-                self.posts = pickle.load(f).posts
+                temp_instance = pickle.load(f)
+                self.posts = temp_instance.posts
+                self.index = temp_instance.index
         except:
             self.posts = []
+            self.index = 0
 
     @write_file
     def add_post(self, title: str, date: str, content: str):
         post = {
-            "id": len(self.posts) + 1,
+            "id": self.index + 1,
             "title": title,
             "date": date,
             "content": content,
         }
 
         self.posts.append(post)
+        self.index += 1
 
     @write_file
     def update_post(self, id: int, title: str, date: str, content: str):
@@ -47,4 +51,4 @@ class Database:
         self.posts.pop(id - 1)
 
     def get_post(self, id: int) -> dict:
-        return self.posts[id - 1]
+        return next((post for post in self.posts if post.get("id") == id), None)

@@ -32,6 +32,7 @@
         name="title"
         placeholder="Article title"
         value="{{post.title}}"
+        required
       />
       <div>
         <label for="pub_date">Publishing date</label>
@@ -40,6 +41,7 @@
           name="pub_date"
           id="pub_date"
           value="{{post.date}}"
+          required
         />
       </div>
       <textarea
@@ -47,6 +49,7 @@
         rows="15"
         placeholder="Enter Content"
         name="content"
+        required
       >
 {{post.content}}</textarea
       >

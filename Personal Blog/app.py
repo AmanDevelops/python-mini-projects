@@ -1,12 +1,11 @@
 import base64
-import os
+from datetime import datetime
 
 from db import Database
 from flask import Flask, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 database = Database()
-# database.add_post("title2", "date2", "content2")
 
 
 def auth_required(f):
@@ -37,13 +36,23 @@ def auth_required(f):
 
 @app.route("/")
 def home():
-    return render_template("index.html", posts=database.posts)
+    posts = [
+        post
+        for post in database.posts
+        if datetime.strptime(post["date"], "%Y-%m-%dT%H:%M") < datetime.now()
+    ]
+
+    print(posts)
+
+    return render_template("index.html", posts=posts)
 
 
 @app.route("/article/<int:id>")
 def view_post(id):
     try:
         post_data = database.get_post(id)
+        if post_data is None:
+            raise IndexError
     except IndexError:
         return "Post Not found", 404
     return render_template("view_post.html", post=post_data)
@@ -72,6 +81,9 @@ def new_post_view():
 @auth_required
 def edit_posts(id):
     try:
+        post_data = database.get_post(id)
+        if post_data is None:
+            raise IndexError
         if request.method == "POST":
             database.update_post(
                 id=id,
@@ -80,6 +92,7 @@ def edit_posts(id):
                 content=request.form.get("content"),
             )
         post_data = database.get_post(id)
+
         return render_template("edit_post.html", post=post_data)
     except:
         return "Post Not found", 404
