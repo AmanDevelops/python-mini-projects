@@ -53,5 +53,4 @@ class Category(Base):
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
-# with Session() as session:
-#     session.commit()
+

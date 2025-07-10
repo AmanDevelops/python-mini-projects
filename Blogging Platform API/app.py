@@ -6,6 +6,68 @@ from models import Category, Post, Session
 app = Flask(__name__)
 
 
+@app.route("/posts", methods=["GET"])
+def get_post():
+    is_query = request.args.get("term")
+
+    with Session() as session:
+
+        if is_query is not None:
+            posts_data = (
+                session.query(Post)
+                .join(Post.category_relationship)
+                .filter(
+                    or_(
+                        Post.title.ilike(f"%{is_query}%"),
+                        Post.content.ilike(f"%{is_query}%"),
+                        Category.name.ilike(f"%{is_query}%"),
+                    )
+                )
+                .all()
+            )
+
+        else:
+            posts_data = session.query(Post).all()
+
+        posts = [
+            {
+                **{
+                    column.name: getattr(post, column.name)
+                    for column in Post.__table__.columns
+                },
+                "category": (
+                    post.category_relationship.name
+                    if post.category_relationship
+                    else None
+                ),
+            }
+            for post in posts_data
+        ]
+
+        posts = {"success": True, "data": posts}
+        return posts, 200
+
+
+@app.route("/posts/<int:post_id>", methods=["GET"])
+def get_single_post(post_id):
+    with Session() as session:
+        post_data_response = session.query(Post).filter_by(id=post_id).first()
+        if post_data_response is None:
+            return {
+                "success": False,
+                "message": f"Post with post id: {post_id} does not exists",
+            }, 404
+        post_data = {
+            **{
+                column.name: getattr(post_data_response, column.name)
+                for column in Post.__table__.columns
+            },
+            "category": post_data_response.category_relationship.name,
+        }
+        post_data = {"success": True, "data": post_data}
+        return post_data, 200
+
+
 @app.route("/posts", methods=["POST"])
 def create_post():
     data = request.get_json()
@@ -56,79 +118,6 @@ def create_post():
             "message": "Post created successfully",
             "data": post_data,
         }, 201
-
-
-@app.route("/posts", methods=["GET"])
-def get_post():
-    is_query = request.args.get("term")
-
-    with Session() as session:
-
-        if is_query is not None:
-            posts_data = (
-                session.query(Post)
-                .join(Post.category_relationship)
-                .filter(
-                    or_(
-                        Post.title.ilike(f"%{is_query}%"),
-                        Post.content.ilike(f"%{is_query}%"),
-                        Category.name.ilike(f"%{is_query}%"),
-                    )
-                )
-                .all()
-            )
-
-        else:
-            posts_data = session.query(Post).all()
-
-        posts = [
-            {
-                **{
-                    column.name: getattr(post, column.name)
-                    for column in Post.__table__.columns
-                },
-                "category": (
-                    post.category_relationship.name
-                    if post.category_relationship
-                    else None
-                ),
-            }
-            for post in posts_data
-        ]
-        return posts
-
-
-@app.route("/posts/<int:post_id>", methods=["GET"])
-def get_single_post(post_id):
-    with Session() as session:
-        post_data_response = session.query(Post).filter_by(id=post_id).first()
-        if post_data_response is None:
-            return {
-                "success": False,
-                "message": f"Post with post id: {post_id} does not exists",
-            }, 404
-        post_data = {
-            **{
-                column.name: getattr(post_data_response, column.name)
-                for column in Post.__table__.columns
-            },
-            "category": post_data_response.category_relationship.name,
-        }
-        return post_data, 200
-
-
-@app.route("/posts/<int:post_id>", methods=["DELETE"])
-def delete_single_post(post_id):
-    with Session() as session:
-        post_data_response = session.query(Post).filter_by(id=post_id).first()
-        if post_data_response is None:
-            return {
-                "success": False,
-                "message": f"Post with post id: {post_id} does not exists",
-            }, 404
-        session.delete(post_data_response)
-        session.commit()
-        return "", 204
 
 
 @app.route("/posts/<int:post_id>", methods=["PUT"])
@@ -183,6 +172,20 @@ def update_single_post(post_id):
 
         return {
             "success": True,
-            "message": "Post created successfully",
+            "message": "Post updated successfully",
             "data": post_data,
         }, 200
+
+
+@app.route("/posts/<int:post_id>", methods=["DELETE"])
+def delete_single_post(post_id):
+    with Session() as session:
+        post_data_response = session.query(Post).filter_by(id=post_id).first()
+        if post_data_response is None:
+            return {
+                "success": False,
+                "message": f"Post with post id: {post_id} does not exists",
+            }, 404
+        session.delete(post_data_response)
+        session.commit()
+        return "", 204
