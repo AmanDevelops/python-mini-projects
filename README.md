@@ -6,3 +6,4 @@
 - [Unit Converter](/Unit%20Converter/) - <sup>[Inspiration](https://roadmap.sh/projects/unit-converter)</sup>
 - [Personal Blog](/Personal%20Blog/) - <sup>[Inspiration](https://roadmap.sh/projects/personal-blog)</sup>
 - [Weather API](/Weather%20API/) - <sup>[Inspiration](https://roadmap.sh/projects/weather-api-wrapper-service)</sup>
+- [Blogging Platform API](/Blogging%20Platform%20API/) - <sup>[Inspiration](https://roadmap.sh/projects/blogging-platform-api)</sup>
