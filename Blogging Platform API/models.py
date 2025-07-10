@@ -14,7 +14,7 @@ from sqlalchemy.types import JSON
 
 load_dotenv()
 
-engine = create_engine(os.environ.get("POSTGRES_URI"), echo=True)
+engine = create_engine(os.environ.get("POSTGRES_URI"))
 
 
 class Base(DeclarativeBase):
@@ -27,7 +27,7 @@ class Post(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     content: Mapped[str] = mapped_column(String)
-    categories: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     tags: Mapped[list] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -38,7 +38,7 @@ class Post(Base):
         onupdate=func.now(),
     )
 
-    category: Mapped["Category"] = relationship("Category", back_populates="posts")
+    category_relationship: Mapped["Category"] = relationship("Category", back_populates="posts")
 
 
 class Category(Base):
@@ -47,11 +47,11 @@ class Category(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
 
-    posts: Mapped["Post"] = relationship("Post", back_populates="category")
+    posts: Mapped["Post"] = relationship("Post", back_populates="category_relationship")
 
 
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
-with Session() as session:
-    session.commit()
+# with Session() as session:
+#     session.commit()
