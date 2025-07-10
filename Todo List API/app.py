@@ -64,7 +64,7 @@ def login_user():
 
         jwt_token = jwt.encode(
             {
-                "sub": user_data.email,
+                "sub": str(user_data.id),
                 "exp": int(time.time()) + 3600,
             },
             jwt_secret,
@@ -78,10 +78,10 @@ def login_user():
 
 @app.route("/todos", methods=["POST"])
 @auth_required
-def create_todo():
+def create_todo(user):
     data = request.get_json()
     validate_todo_data(data)
-    new_todo = Todo(title=data["title"], description=data["description"])
+    new_todo = Todo(title=data["title"], description=data["description"], user_id=user)
 
     with Session() as session:
         session.add(new_todo)
@@ -95,12 +95,12 @@ def create_todo():
 
 @app.route("/todos/<int:todo_id>", methods=["PUT"])
 @auth_required
-def update_todo(todo_id):
+def update_todo(user, todo_id):
     data = request.get_json()
     validate_todo_data(data)
 
     with Session() as session:
-        to_do_data = session.query(Todo).filter_by(id=todo_id).first()
+        to_do_data = session.query(Todo).filter_by(id=todo_id, user_id=user).first()
         if not to_do_data:
             return {"error": f"Todo with id '{todo_id}' does not exists"}, 404
 
@@ -117,9 +117,9 @@ def update_todo(todo_id):
 
 @app.route("/todos/<int:todo_id>", methods=["DELETE"])
 @auth_required
-def delete_todo(todo_id):
+def delete_todo(user, todo_id):
     with Session() as session:
-        to_do_data = session.query(Todo).filter_by(id=todo_id).first()
+        to_do_data = session.query(Todo).filter_by(id=todo_id, user_id=user).first()
         if not to_do_data:
             return {"error": f"Todo with id '{todo_id}' does not exists"}, 404
 
@@ -129,18 +129,27 @@ def delete_todo(todo_id):
     return "", 204
 
 
-@app.route("/todos", methods=['GET'])
+@app.route("/todos", methods=["GET"])
 @auth_required
-def get_todos():
+def get_todos(user):
     current_page = int(request.args.get("page", 1))
     limit_per_page = int(request.args.get("limit", 10))
-    
+
     offset = (current_page - 1) * limit_per_page
 
     with Session() as session:
-        todos = session.query(Todo).limit(limit_per_page).offset(offset).all()
+        todos = (
+            session.query(Todo)
+            .filter_by(user_id=user)
+            .limit(limit_per_page)
+            .offset(offset)
+            .all()
+        )
         todo_list = [
-            {column.name: getattr(todo, column.name) for column in Todo.__table__.columns}
+            {
+                column.name: getattr(todo, column.name)
+                for column in Todo.__table__.columns
+            }
             for todo in todos
         ]
         return {"todos": todo_list}, 200

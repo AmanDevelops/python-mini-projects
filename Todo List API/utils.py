@@ -76,10 +76,10 @@ def auth_required(f):
             jwt_token = auth_header.split(" ")[1]
             if jwt_token is not None:
                 try:
-                    jwt.decode(jwt_token, jwt_secret, algorithms=["HS256"])
+                    content = jwt.decode(jwt_token, jwt_secret, algorithms=["HS256"])
                 except:
                     return {"error": "Unauthorized"}, 401
-                return f(*args, **kwargs)
+                return f(user=content["sub"], *args, **kwargs)
         return {"error": "Unauthorized"}, 401
 
     wrapper.__name__ = f.__name__
