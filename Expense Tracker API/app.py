@@ -7,7 +7,7 @@ from flask import Flask, request
 
 from config import jwt_secret
 from models import Category, Expense, Session, User
-from validators import auth_required, validate_register
+from validators import auth_required, validate_create_expense, validate_register
 
 app = Flask(__name__)
 import exceptions
@@ -69,7 +69,37 @@ def login():
     raise ValueError("Either username or passsword is incorrect")
 
 
-@app.route("/expenses/create", methods=['POST'])
+@app.route("/expenses/create", methods=["POST"])
 @auth_required
 def create_expense(user):
-    return f"Welcome {user}", 200
+    data = request.get_json()
+    validate_create_expense(data)
+
+    category = data.get("category", "Uncategorized")
+
+    with Session() as session:
+        category_data = session.query(Category).filter_by(name=category).first()
+        if not category_data:
+            category_data = Category(name=category)
+            session.add(category_data)
+            session.commit()
+
+        new_expense = Expense(
+            title=data["title"],
+            category_id=category_data.id,
+            amount=data["amount"],
+            user_id=int(user),
+        )
+        session.add(new_expense)
+        session.commit()
+
+        return {
+            "message": "Expense Created!",
+            "data": {
+                "id": new_expense.id,
+                "title": new_expense.title,
+                "amount": new_expense.amount,
+                "created_at": new_expense.created_at,
+                "owner": new_expense.user.username,
+            },
+        }, 201

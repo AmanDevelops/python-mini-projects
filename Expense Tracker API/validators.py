@@ -1,4 +1,3 @@
-
 import jwt
 from flask import request
 
@@ -22,6 +21,21 @@ def validate_register(data):
 
     if len(data["password"]) < 8:
         raise ValueError("Password must be at least 8 characters long.")
+
+
+def validate_create_expense(data):
+    required_fields = ("title", "amount")
+
+    missing_fields = [field for field in required_fields if not data.get(field)]
+
+    if missing_fields:
+        raise ValueError(f"Missing required field(s): {', '.join(missing_fields)}")
+
+    if not isinstance(data["amount"], int):
+        raise ValueError("'amount' must be number")
+
+    if not isinstance(data["title"], str):
+        raise ValueError("'title' must be text")
 
 
 def auth_required(f):
