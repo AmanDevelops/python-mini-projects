@@ -7,7 +7,12 @@ from flask import Flask, request
 
 from config import jwt_secret
 from models import Category, Expense, Session, User
-from validators import auth_required, validate_create_expense, validate_register
+from validators import (
+    auth_required,
+    validate_create_expense,
+    validate_register,
+    validate_update_expense,
+)
 
 app = Flask(__name__)
 import exceptions
@@ -103,3 +108,52 @@ def create_expense(user):
                 "owner": new_expense.user.username,
             },
         }, 201
+
+
+@app.route("/expenses/<int:id>", methods=["DELETE"])
+@auth_required
+def delete_expenses(user, id):
+    with Session() as session:
+        expenses_data = session.query(Expense).filter_by(id=id, user_id=user).first()
+        if not expenses_data:
+            raise ValueError(f"Expense with expense_id '{id}' does not exists")
+
+        session.delete(expenses_data)
+        session.commit()
+
+        return "", 204
+
+
+@app.route("/expenses/<int:id>", methods=["PUT"])
+@auth_required
+def update_expenses(user, id):
+    with Session() as session:
+        expenses_data = session.query(Expense).filter_by(id=id, user_id=user).first()
+        if not expenses_data:
+            raise ValueError(f"Expense with expense_id '{id}' does not exists")
+
+        data = request.get_json()
+        validate_update_expense(data)
+
+        category_data = session.query(Category).filter_by(name=data["category"]).first()
+        if not category_data:
+            category_data = Category(name=data["category"])
+            session.add(category_data)
+            session.commit()
+
+        expenses_data.title = data["title"]
+        expenses_data.amount = data["amount"]
+        expenses_data.category_id = category_data.id
+
+        session.commit()
+
+        return {
+            "message": "Expense Updated",
+            "data": {
+                "id": expenses_data.id,
+                "title": expenses_data.title,
+                "amount": expenses_data.amount,
+                "created_at": expenses_data.created_at,
+                "owner": expenses_data.user.username,
+            }
+        }, 200
