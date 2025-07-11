@@ -1,3 +1,10 @@
+
+import jwt
+from flask import request
+
+from config import jwt_secret
+
+
 def validate_register(data):
     required_fields = ("username", "password")
 
@@ -15,3 +22,20 @@ def validate_register(data):
 
     if len(data["password"]) < 8:
         raise ValueError("Password must be at least 8 characters long.")
+
+
+def auth_required(f):
+    def wrapper(*args, **kwargs):
+        try:
+            jwt_token = request.headers.get("Authorization").split(" ")[1]
+        except Exception:
+            raise ValueError("Please Provide a JWT Token")
+
+        try:
+            user = jwt.decode(jwt_token, jwt_secret, algorithms=["HS256"])["sub"]
+        except jwt.InvalidTokenError:
+            raise ValueError("Invalid or expired JWT Token")
+
+        return f(user=user, *args, **kwargs)
+
+    return wrapper

@@ -5,13 +5,13 @@ import bcrypt
 import jwt
 from flask import Flask, request
 
+from config import jwt_secret
 from models import Category, Expense, Session, User
-from validators import validate_register
+from validators import auth_required, validate_register
 
 app = Flask(__name__)
 import exceptions
 
-jwt_secret = os.environ.get("JWT_SECRET")
 if jwt_secret is None:
     raise RuntimeError("Please setup the JWT secret key to the environment variables.")
 
@@ -40,7 +40,7 @@ def register():
         session.add(new_user)
         session.commit()
 
-        return {"message": "User created succesfully!"}, 201
+        return {"message": "User created successfully!"}, 201
 
 
 @app.route("/auth/login", methods=["POST"])
@@ -52,16 +52,24 @@ def login():
         user_data = session.query(User).filter_by(username=data["username"]).first()
 
         if not user_data:
-            raise ValueError("Either username or passsword is incorrect")
-
+            raise ValueError("Either username or password is incorrect")
 
         if bcrypt.checkpw(data["password"].encode("utf-8"), user_data.password):
             jwt_token = jwt.encode(
-                {"sub": user_data.id, "exp": int(time.time()) + 3600},
-                os.environ.get("JWT_SECRET"),
+                {"sub": str(user_data.id), "exp": int(time.time()) + 3600},
+                jwt_secret,
                 algorithm="HS256",
             )
 
-            return {"message": "User authnticated succesfully", "token": jwt_token}, 200
-        
+            return {
+                "message": f"User authenticated successfully",
+                "token": jwt_token,
+            }, 200
+
     raise ValueError("Either username or passsword is incorrect")
+
+
+@app.route("/expenses/create", methods=['POST'])
+@auth_required
+def create_expense(user):
+    return f"Welcome {user}", 200
