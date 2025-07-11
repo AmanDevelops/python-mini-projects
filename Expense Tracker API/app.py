@@ -155,5 +155,32 @@ def update_expenses(user, id):
                 "amount": expenses_data.amount,
                 "created_at": expenses_data.created_at,
                 "owner": expenses_data.user.username,
-            }
+            },
         }, 200
+
+
+@app.route("/expenses", methods=["GET"])
+@auth_required
+def get_expenses(user):
+    threshold_timestamp = (
+        int(time.time()) - int(request.args.get("filter", 365)) * 86400
+    )
+
+    with Session() as session:
+        expense_data = (
+            session.query(Expense)
+            .filter(Expense.created_at > threshold_timestamp, Expense.user_id == user)
+            .all()
+        )
+
+        expense_response = []
+        for expense in expense_data:
+            expense_response.append(
+                {
+                    "id": expense.id,
+                    "title": expense.title,
+                    "amount": expense.amount,
+                    "created_at": expense.created_at,
+                }
+            )
+        return {"data": expense_response}, 200
