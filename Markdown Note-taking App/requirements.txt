@@ -1,0 +1,9 @@
+blinker==1.9.0
+click==8.2.1
+Flask==3.1.1
+itsdangerous==2.2.0
+Jinja2==3.1.6
+Markdown==3.8.2
+MarkupSafe==3.0.2
+pyspellchecker==0.8.3
+Werkzeug==3.1.3
