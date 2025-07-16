@@ -10,4 +10,4 @@
 - [Todo List API](/Todo%20List%20API/) - <sup>[Inspiration](https://roadmap.sh/projects/todo-list-api)</sup>
 - [Expense Tracker API](/Expense%20Tracker%20API/) - <sup>[Inspiration](https://roadmap.sh/projects/expense-tracker-api)</sup>
 - [Markdown Note-taking App](/Markdown%20Note-taking%20App/) - <sup>[Inspiration](https://roadmap.sh/projects/markdown-note-taking-app)</sup>
-
+- [URL Shortening Service](/URL%20Shortening%20Service/) - <sup>[Inspiration](https://roadmap.sh/projects/url-shortening-service)</sup>

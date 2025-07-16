@@ -63,7 +63,7 @@ def login_user():
         if bcrypt.checkpw(user_data.password.encode(), db_user_data.password.encode()):
             current_time = time.time() // 1
             payload = {
-                "sub": db_user_data.username,
+                "sub": str(db_user_data.id),
                 "exp": current_time + 3600,
                 "iat": current_time,
             }
