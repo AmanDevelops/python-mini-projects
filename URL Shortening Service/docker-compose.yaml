@@ -9,3 +9,16 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_USER=root
       - POSTGRES_DB=url_shortener
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass password
+    volumes: 
+      - cache:/data
+
+      
+volumes:
+  cache:
+    driver: local
